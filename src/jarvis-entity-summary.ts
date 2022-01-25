@@ -17,16 +17,15 @@ import {
   LovelaceCardEditor,
   getLovelace,
 } from 'custom-card-helpers'; // This is a community maintained npm module with common helper functions/types. https://github.com/custom-cards/custom-card-helpers
-import { CARD_VERSION } from './const';
+import { CARD_VERSION } from './constants';
 import './editor';
 
 import type { BoilerplateCardConfig } from './types';
 import { actionHandler } from './action-handler-directive';
-import { localize } from './localize/localize';
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  JARVIS-ENTITY-SUMMARY \n%c  ${localize('common.version')} ${CARD_VERSION}  `,
+  `%c  JARVIS-ENTITY-SUMMARY \n%c  version: ${CARD_VERSION}  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
@@ -54,7 +53,7 @@ export class BoilerplateCard extends LitElement {
   public setConfig(config: BoilerplateCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
     if (!config) {
-      throw new Error(localize('common.invalid_configuration'));
+      throw new Error('Invalid configuration');
     }
 
     if (config.test_gui) {
@@ -122,11 +121,11 @@ export class BoilerplateCard extends LitElement {
   protected render(): TemplateResult | void {
     // TODO Check for stateObj or other necessary things and render a warning if missing
     if (this.config.show_warning) {
-      return this._showWarning(localize('common.show_warning'));
+      return this._showWarning('warning message');
     }
 
     if (this.config.show_error) {
-      return this._showError(localize('common.show_error'));
+      return this._showError('error message');
     }
 
     return html`
@@ -140,7 +139,8 @@ export class BoilerplateCard extends LitElement {
         tabindex="0"
         .label=${`Boilerplate: ${this.config || 'No Entity Defined'}`}
       >
-        <!-- <div class='jarvis-widget'>${console.log(this.hass.states[this.config.entities[0]])}</div> -->
+        <!-- console.log(this.hass.states[this.config.entities[0]]) -->
+        <div class='jarvis-widget'>${console.log("seems to work!")}</div>
       </ha-card>
     `;
   }
