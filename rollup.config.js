@@ -32,7 +32,7 @@ const plugins = [
 
 export default [
   {
-    input: 'src/boilerplate-card.ts',
+    input: 'src/jarvis-entity-summary.ts',
     output: {
       dir: 'dist',
       format: 'es',
