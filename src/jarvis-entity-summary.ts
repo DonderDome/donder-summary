@@ -111,9 +111,15 @@ export class BoilerplateCard extends LitElement {
         position: absolute;
         top: 0;
         left: 0;
-        padding: 20px;
+        padding: 20px 40px;
         box-sizing: border-box;
         border: 1px solid #fff;
+      }
+      .title {
+        text-transform: uppercase;
+        font-size: 1.2rem;
+        font-weight: 300;
+        padding: 15px 0 20px;
       }
     `;
   }
@@ -128,9 +134,11 @@ export class BoilerplateCard extends LitElement {
       return this._showError('error message');
     }
 
+    // const entityState = this.hass.states[this.config.entity[0]]
+    // const attributes = entityState?.attributes
+
     return html`
       <ha-card
-        .header=${this.config.name}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this.config.hold_action),
@@ -140,7 +148,9 @@ export class BoilerplateCard extends LitElement {
         .label=${`Boilerplate: ${this.config || 'No Entity Defined'}`}
       >
         <!-- console.log(this.hass.states[this.config.entities[0]]) -->
-        <div class='jarvis-widget'>${console.log("seems to work!")}</div>
+        <div class='jarvis-widget'>
+          <div class='title'>${this.config.name}</div>
+        </div>
       </ha-card>
     `;
   }
