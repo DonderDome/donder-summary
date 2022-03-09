@@ -10,7 +10,6 @@ import {
 import { property, state } from "lit/decorators";
 import {
   HomeAssistant,
-  hasConfigOrEntityChanged,
   hasAction,
   ActionHandlerEvent,
   handleAction,
@@ -19,7 +18,7 @@ import {
 } from 'custom-card-helpers'; // This is a community maintained npm module with common helper functions/types. https://github.com/custom-cards/custom-card-helpers
 import { CARD_VERSION } from './constants';
 import './editor';
-
+// import './components/svg-item'
 import type { BoilerplateCardConfig } from './types';
 import { actionHandler } from './action-handler-directive';
 
@@ -71,7 +70,37 @@ export class BoilerplateCard extends LitElement {
       return false;
     }
 
-    return hasConfigOrEntityChanged(this, changedProps, false);
+    return this.hasConfigOrEntityChanged(this, changedProps, false);
+  }
+
+  protected hasConfigOrEntityChanged(element: any, changedProps: PropertyValues, forceUpdate: boolean): boolean {
+    if (changedProps.has('config') || forceUpdate) {
+      return true;
+    }
+    if (element.config!.entity || element.config!.entities) {
+      const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
+      if (oldHass) {
+        if (element.config.entities) {
+          let hasChanged = false
+          for (let i=0; i<element.config.entities.length-1; i--) {
+            const entity = element.config.entities[i]
+            if (oldHass.states[entity] !== element.hass!.states[entity]) {
+              hasChanged = true
+              break
+            }
+            return hasChanged
+          }
+        } else {
+          return (
+            oldHass.states[element.config!.entity]
+            !== element.hass!.states[element.config!.entity]
+          );
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
@@ -111,7 +140,7 @@ export class BoilerplateCard extends LitElement {
         position: absolute;
         top: 0;
         left: 0;
-        padding: 20px 40px;
+        padding: 20px 30px;
         box-sizing: border-box;
         border: 1px solid #fff;
       }
@@ -120,6 +149,34 @@ export class BoilerplateCard extends LitElement {
         font-size: 1.2rem;
         font-weight: 300;
         padding: 15px 0 20px;
+      }
+      .summary-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .summary-statuses {
+        flex: 2;
+      }
+      .summary-icon {
+        flex: 3;
+        padding-left: 10px;
+      }
+      .summary-status {
+        float: left;
+        width: 17px;
+        border: 1px solid rgb(255, 255, 255);
+        box-sizing: border-box;
+        margin-bottom: 7px;
+        height: 17px;
+        margin-right: 7px;
+      }
+      .summary-status.active {
+        border: 2px solid #be9f6e;
+        box-shadow: inset 0 0 10px #be9f6e, 0 0 5px #be9f6e;
+      }
+      .summary-status.innactive {
+
       }
     `;
   }
@@ -134,9 +191,6 @@ export class BoilerplateCard extends LitElement {
       return this._showError('error message');
     }
 
-    // const entityState = this.hass.states[this.config.entity[0]]
-    // const attributes = entityState?.attributes
-
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -147,9 +201,22 @@ export class BoilerplateCard extends LitElement {
         tabindex="0"
         .label=${`Boilerplate: ${this.config || 'No Entity Defined'}`}
       >
-        <!-- console.log(this.hass.states[this.config.entities[0]]) -->
         <div class='jarvis-widget'>
           <div class='title'>${this.config.name}</div>
+          <div class='summary-wrapper'>
+            <div class='summary-statuses'>
+              ${this.config.entities.map(e => {
+                const isActive = this.hass.states[e]?.state === 'on'
+                return html`
+                  <div class=${'summary-status '+ (isActive ? 'active' : 'innactive')}></div>
+                `
+              })}
+            </div>
+            <div class='summary-icon'>
+              <!-- TODO: Move this into a generic component. Right now it's on the weather widget, change "state" to be "icon" -->
+              <svg-item state=${'sunny'}></svg-item>
+            </div>
+          </div>
         </div>
       </ha-card>
     `;
