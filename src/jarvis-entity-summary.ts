@@ -213,8 +213,7 @@ export class BoilerplateCard extends LitElement {
               })}
             </div>
             <div class='summary-icon'>
-              <!-- TODO: Move this into a generic component. Right now it's on the weather widget, change "state" to be "icon" -->
-              <svg-item state=${'sunny'}></svg-item>
+              <svg-item state=${this.config.icon}></svg-item>
             </div>
           </div>
         </div>
