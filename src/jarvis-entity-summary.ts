@@ -140,15 +140,15 @@ export class BoilerplateCard extends LitElement {
         position: absolute;
         top: 0;
         left: 0;
-        padding: 20px 30px;
+        padding: 18px 17px;
         box-sizing: border-box;
         border: 1px solid #fff;
       }
       .title {
         text-transform: uppercase;
-        font-size: 1.2rem;
+        font-size: .9rem;
         font-weight: 300;
-        padding: 15px 0 20px;
+        margin-bottom: 17px;
       }
       .summary-wrapper {
         display: flex;
@@ -164,12 +164,12 @@ export class BoilerplateCard extends LitElement {
       }
       .summary-status {
         float: left;
-        width: 17px;
+        width: 13px;
         border: 1px solid rgb(255, 255, 255);
         box-sizing: border-box;
-        margin-bottom: 7px;
-        height: 17px;
-        margin-right: 7px;
+        margin-bottom: 4px;
+        height: 13px;
+        margin-right: 4px;
       }
       .summary-status.active {
         border: 2px solid #be9f6e;
