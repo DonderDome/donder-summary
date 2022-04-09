@@ -135,20 +135,21 @@ export class BoilerplateCard extends LitElement {
         width: 100%;
       }
       .jarvis-widget {
-        height: 100%;
-        width: 100%;
         position: absolute;
         top: 0;
         left: 0;
-        padding: 18px 17px;
+        height: 100%;
+        width: 100%;
+        padding: 15px 16px;
         box-sizing: border-box;
-        border: 1px solid #fff;
+        background: url('/local/jarvis/assets/summary_frame.svg');
       }
       .title {
         text-transform: uppercase;
-        font-size: .9rem;
-        font-weight: 300;
-        margin-bottom: 17px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        /* margin-bottom: 18px; */
+        font-stretch: 160%;
       }
       .summary-wrapper {
         display: flex;
@@ -156,27 +157,74 @@ export class BoilerplateCard extends LitElement {
         justify-content: space-between;
       }
       .summary-statuses {
-        flex: 2;
+        flex: 1.6 1 0%;
+        padding-right: 5px;
+        padding-top: 5px;
+        /* border-right: 2px solid rgba(255, 255, 255, 0.1); */
       }
       .summary-icon {
         flex: 3;
         padding-left: 10px;
+        position: relative;
+      }
+      .summary-icon img {
+        padding: 1px 3px;
+        position: relative;
+        margin-bottom: -10px;
       }
       .summary-status {
         float: left;
-        width: 13px;
-        border: 1px solid rgb(255, 255, 255);
+        width: 6px;
         box-sizing: border-box;
-        margin-bottom: 4px;
-        height: 13px;
-        margin-right: 4px;
+        margin: 2px 5px 4px 2px;
+        height: 6px;
+        border-radius: 100%;
+        background: rgba(255, 255, 255, 0.3);
       }
       .summary-status.active {
-        border: 2px solid #be9f6e;
-        box-shadow: inset 0 0 10px #be9f6e, 0 0 5px #be9f6e;
+        background: rgba(255, 255, 255, 1);
       }
       .summary-status.innactive {
 
+      }
+      .summary-consumption {
+        position: absolute;
+        text-align: center;
+        top: 0px;
+        width: 100%;
+        padding-right: 7px;
+        height: 100%;
+        box-sizing: border-box;
+        font-size: 1em;
+        font-weight: 600;
+        padding-top: 27%;
+      }
+      .summary-consumption span {
+        font-size: .7em;
+      }
+      .summary-corner-bs {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 13%;
+        padding: 15px;
+      }
+      .summary-amount {
+        font-weight: 600;
+        opacity: 0.5;
+        font-size: 0.8em;
+        margin-top: -5px;
+        margin-bottom: 3px;
+      }
+      .summary-amount .summary-amount-num {
+        display: inline-block;
+      }
+      .summary-amount img{
+        display: inline-block;
+        width: 27%;
+        margin-left: 25px;
+        position: relative;
+        top: 2px;
       }
     `;
   }
@@ -191,6 +239,9 @@ export class BoilerplateCard extends LitElement {
       return this._showError('error message');
     }
 
+    const numEntities = this.config.entities.length
+    const numActiveEntities = this.config.entities.filter(e => this.hass.states[e]?.state === 'on').length
+
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -203,6 +254,13 @@ export class BoilerplateCard extends LitElement {
       >
         <div class='jarvis-widget'>
           <div class='title'>${this.config.name}</div>
+          <div class='summary-amount'>
+            <div class='summary-amount-num'>${`${numActiveEntities}/${numEntities}`}</div>
+            <img src='/local/jarvis/assets/summary_bs.svg' />
+          </div>
+          <div class='summary-corner-bs'>
+            <img src='/local/jarvis/assets/summary_corner.svg' />
+          </div>
           <div class='summary-wrapper'>
             <div class='summary-statuses'>
               ${this.config.entities.map(e => {
@@ -213,7 +271,8 @@ export class BoilerplateCard extends LitElement {
               })}
             </div>
             <div class='summary-icon'>
-              <svg-item state=${this.config.icon}></svg-item>
+              <img src='/local/jarvis/assets/summary_gauge.svg' />
+              <div class='summary-consumption'>40<span>W</span></div>
             </div>
           </div>
         </div>
