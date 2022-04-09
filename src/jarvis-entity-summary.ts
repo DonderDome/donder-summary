@@ -142,7 +142,7 @@ export class BoilerplateCard extends LitElement {
         width: 100%;
         padding: 15px 16px;
         box-sizing: border-box;
-        background: url('/local/jarvis/assets/summary_frame.svg');
+        background: url('/local/jarvis/assets/cctv_frame_fat.svg');
       }
       .title {
         text-transform: uppercase;
