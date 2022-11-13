@@ -82,14 +82,14 @@ export class BoilerplateCard extends LitElement {
       if (oldHass) {
         if (element.config.entities) {
           let hasChanged = false
-          for (let i=0; i<element.config.entities.length-1; i--) {
+          for (let i=0; i<=element.config.entities.length-1; i++) {
             const entity = element.config.entities[i]
             if (oldHass.states[entity] !== element.hass!.states[entity]) {
               hasChanged = true
               break
             }
-            return hasChanged
           }
+          return hasChanged
         } else {
           return (
             oldHass.states[element.config!.entity]
@@ -135,6 +135,7 @@ export class BoilerplateCard extends LitElement {
         width: 100%;
       }
       .jarvis-widget {
+        color: #fff;
         position: absolute;
         top: 0;
         left: 0;
@@ -179,7 +180,7 @@ export class BoilerplateCard extends LitElement {
         margin: 2px 5px 4px 2px;
         height: 6px;
         border-radius: 100%;
-        background: rgba(255, 255, 255, 0.3);
+        background: #323848;
       }
       .summary-status.active {
         background: rgba(255, 255, 255, 1);
