@@ -48,6 +48,10 @@ export class BoilerplateCard extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
   @state() private config!: BoilerplateCardConfig;
+  // @state() protected _isHassLoaded = false;
+  // @state() protected _isOn = false;
+  @state() protected _currentPercentage = 0;
+  @state() protected _timeout;
 
   public setConfig(config: BoilerplateCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
@@ -77,17 +81,35 @@ export class BoilerplateCard extends LitElement {
     if (changedProps.has('config') || forceUpdate) {
       return true;
     }
+
     if (element.config!.entity || element.config!.entities) {
       const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
       if (oldHass) {
         if (element.config.entities) {
           let hasChanged = false
           for (let i=0; i<=element.config.entities.length-1; i++) {
-            const entity = element.config.entities[i]
-            if (oldHass.states[entity] !== element.hass!.states[entity]) {
-              hasChanged = true
-              break
+            if (this.config.icon === 'shutters') {
+              const entity_open = element.config.entities[i]+'_open'
+              const entity_close = element.config.entities[i]+'_close'
+
+              if ((oldHass.states[entity_open] !== element.hass!.states[entity_open])) {
+                hasChanged = true
+                this.shutterListener(element.config.entities[i]);  
+              } else if ((oldHass.states[entity_close] !== element.hass!.states[entity_close])) {
+                hasChanged = true
+                this.shutterListener(element.config.entities[i]);  
+              }
+
+            } else {
+              const entity = element.config.entities[i]
+              if (oldHass.states[entity] !== element.hass!.states[entity]) {
+                hasChanged = true  
+                break
+              }
             }
+            
+
+            
           }
           return hasChanged
         } else {
@@ -101,6 +123,66 @@ export class BoilerplateCard extends LitElement {
     } else {
       return false;
     }
+  }
+
+  protected shutterListener(sw: any): any {
+    console.log("shutterListener")
+    // detect a close/open CHANGE in a switch (done)
+    
+    const open = this.hass.states[sw+'_open'].state === 'on'
+    const close = this.hass.states[sw+'_close'].state === 'on'
+
+    console.log(open, close, this._currentPercentage)
+
+    // changed to on?
+    if (open || close) {
+      this._currentPercentage = parseFloat(this.hass?.states[`input_number.living_room_shutters_percentage`].state)
+      // get "direction" (open or close switch)
+      if (open) {
+        clearInterval(this._timeout)
+        this._timeout = setInterval(() => {
+          const percentage = this._currentPercentage
+          let newPercentage = percentage + 100/52
+
+          if (newPercentage > 100) {
+            newPercentage = 100
+            this._currentPercentage = newPercentage
+            this.stopShutter(sw)
+          } else {
+            this._currentPercentage = newPercentage
+          }
+          console.log("Up", this._currentPercentage)
+        }, 500)
+      } else if (close) {
+        clearInterval(this._timeout)
+        this._timeout = setInterval(() => {
+          const percentage = this._currentPercentage
+          let newPercentage = percentage - 100/52
+
+          if (newPercentage < 0) {
+            newPercentage = 0
+            this._currentPercentage = newPercentage
+            this.stopShutter(sw)
+          } else {
+            this._currentPercentage = newPercentage
+          }
+          console.log("Down", this._currentPercentage)
+        }, 500)
+      }
+    }
+
+    // changed to off?
+    if (!open && !close) {
+      this.stopShutter(sw)
+    }
+
+  }
+
+  protected stopShutter(sw: any): any {
+    const inputName = sw.split('.')[1]
+    clearInterval(this._timeout)
+    console.log("Stopped", this._currentPercentage)
+    this.hass.callService('input_number', 'set_value', {entity_id: `input_number.${inputName}_percentage`, value: this._currentPercentage})
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
@@ -130,7 +212,7 @@ export class BoilerplateCard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      .type-custom-jarvis-entity-summary {
+     .type-custom-jarvis-entity-summary {
         height: 100%;
         width: 100%;
       }
@@ -278,6 +360,7 @@ export class BoilerplateCard extends LitElement {
         tabindex="0"
         .label=${`Boilerplate: ${this.config || 'No Entity Defined'}`}
       >
+        <img src='/local/jarvis/assets/sizer.jpg' class="jarvis-sizer" />
         <div class='jarvis-widget'>
           <div class='title'>${this.config.name}</div>
           <div class='summary-amount'>
