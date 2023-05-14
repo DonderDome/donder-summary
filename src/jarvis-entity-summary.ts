@@ -50,8 +50,8 @@ export class BoilerplateCard extends LitElement {
   @state() private config!: BoilerplateCardConfig;
   // @state() protected _isHassLoaded = false;
   // @state() protected _isOn = false;
-  @state() protected _currentPercentage = 0;
-  @state() protected _timeout;
+  @state() protected _currentPercentages = {};
+  @state() protected _timeouts = {};
 
   public setConfig(config: BoilerplateCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
@@ -94,10 +94,10 @@ export class BoilerplateCard extends LitElement {
 
               if ((oldHass.states[entity_open] !== element.hass!.states[entity_open])) {
                 hasChanged = true
-                this.shutterListener(element.config.entities[i]);  
+                this.shutterListener(element.config.entities[i].split('.')[1]);  
               } else if ((oldHass.states[entity_close] !== element.hass!.states[entity_close])) {
                 hasChanged = true
-                this.shutterListener(element.config.entities[i]);  
+                this.shutterListener(element.config.entities[i].split('.')[1]);  
               }
 
             } else {
@@ -125,64 +125,64 @@ export class BoilerplateCard extends LitElement {
     }
   }
 
-  protected shutterListener(sw: any): any {
+  //sw: living_room_shutters
+  protected shutterListener(switch_name: any): any {
     console.log("shutterListener")
     // detect a close/open CHANGE in a switch (done)
     
-    const open = this.hass.states[sw+'_open'].state === 'on'
-    const close = this.hass.states[sw+'_close'].state === 'on'
+    const open = this.hass.states[`switch.${switch_name}_open`].state === 'on'
+    const close = this.hass.states[`switch.${switch_name}_close`].state === 'on'
 
-    console.log(open, close, this._currentPercentage)
+    console.log(open, close, this._currentPercentages)
 
     // changed to on?
     if (open || close) {
-      this._currentPercentage = parseFloat(this.hass?.states[`input_number.living_room_shutters_percentage`].state)
+      this._currentPercentages[switch_name] = parseFloat(this.hass?.states[`input_number.${switch_name}_percentage`].state)
       // get "direction" (open or close switch)
       if (open) {
-        clearInterval(this._timeout)
-        this._timeout = setInterval(() => {
-          const percentage = this._currentPercentage
+        clearInterval(this._timeouts[switch_name])
+        this._timeouts[switch_name] = setInterval(() => {
+          const percentage = this._currentPercentages[switch_name]
           let newPercentage = percentage + 100/52
 
           if (newPercentage > 100) {
             newPercentage = 100
-            this._currentPercentage = newPercentage
-            this.stopShutter(sw)
+            this._currentPercentages[switch_name] = newPercentage
+            this.stopShutter(switch_name)
           } else {
-            this._currentPercentage = newPercentage
+            this._currentPercentages[switch_name] = newPercentage
           }
-          console.log("Up", this._currentPercentage)
+          console.log("Up", this._currentPercentages[switch_name])
         }, 500)
       } else if (close) {
-        clearInterval(this._timeout)
-        this._timeout = setInterval(() => {
-          const percentage = this._currentPercentage
+        clearInterval(this._timeouts[switch_name])
+        this._timeouts[switch_name] = setInterval(() => {
+          const percentage = this._currentPercentages[switch_name]
           let newPercentage = percentage - 100/52
 
           if (newPercentage < 0) {
             newPercentage = 0
-            this._currentPercentage = newPercentage
-            this.stopShutter(sw)
+            this._currentPercentages[switch_name] = newPercentage
+            this.stopShutter(switch_name)
           } else {
-            this._currentPercentage = newPercentage
+            this._currentPercentages[switch_name] = newPercentage
           }
-          console.log("Down", this._currentPercentage)
+          console.log("Down", this._currentPercentages[switch_name])
         }, 500)
       }
     }
 
     // changed to off?
     if (!open && !close) {
-      this.stopShutter(sw)
+      this.stopShutter(switch_name)
     }
 
   }
 
-  protected stopShutter(sw: any): any {
-    const inputName = sw.split('.')[1]
-    clearInterval(this._timeout)
-    console.log("Stopped", this._currentPercentage)
-    this.hass.callService('input_number', 'set_value', {entity_id: `input_number.${inputName}_percentage`, value: this._currentPercentage})
+  protected stopShutter(switch_name: any): any {
+    clearInterval(this._timeouts[switch_name])
+    console.log("Stopped", this._currentPercentages[switch_name])
+    this.hass.callService('input_number', 'set_value', {entity_id: `input_number.${switch_name}_percentage`, value: this._currentPercentages[switch_name]})
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
