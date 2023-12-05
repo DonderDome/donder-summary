@@ -191,21 +191,12 @@ const Z=(t,e)=>"method"===e.kind&&e.descriptor&&!("value"in e.descriptor)?{...e,
         height: 100%;
         width: 100%;
       }
-      .donder-sizer {
-        max-width: 100%;
-        opacity: 0;
-      }
       .donder-widget {
-        color: #fff;
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        padding: 15px 16px;
+        background-color: var(--card-background-color);
+        color: var(--text-primary-color);
+        padding: 15px 22px 22px;
         box-sizing: border-box;
-        background: url('/local/donder/assets/cctv_frame_fat.svg');
-        background-repeat: no-repeat;
+        text-align: center;
       }
       .title {
         text-transform: uppercase;
