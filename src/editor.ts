@@ -46,7 +46,7 @@ const options = {
   },
 };
 
-@customElement('jarvis-entity-summary-editor')
+@customElement('donder-summary-editor')
 export class BoilerplateCardEditor extends LitElement implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
   @state() private _config?: BoilerplateCardConfig;

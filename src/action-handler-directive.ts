@@ -162,16 +162,16 @@ class ActionHandler extends HTMLElement implements ActionHandler {
   }
 }
 
-// DONE You need to replace all instances of "action-handler-jarvis-entity-summary" with "action-handler-<your card name>"
-customElements.define('action-handler-jarvis-entity-summary', ActionHandler);
+// DONE You need to replace all instances of "action-handler-donder-summary" with "action-handler-<your card name>"
+customElements.define('action-handler-donder-summary', ActionHandler);
 
 const getActionHandler = (): ActionHandler => {
   const body = document.body;
-  if (body.querySelector('action-handler-jarvis-entity-summary')) {
-    return body.querySelector('action-handler-jarvis-entity-summary') as ActionHandler;
+  if (body.querySelector('action-handler-donder-summary')) {
+    return body.querySelector('action-handler-donder-summary') as ActionHandler;
   }
 
-  const actionhandler = document.createElement('action-handler-jarvis-entity-summary');
+  const actionhandler = document.createElement('action-handler-donder-summary');
   body.appendChild(actionhandler);
 
   return actionhandler as ActionHandler;

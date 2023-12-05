@@ -32,14 +32,14 @@ console.info(
 // This puts your card into the UI card picker dialog
 (window as any).customCards = (window as any).customCards || [];
 (window as any).customCards.push({
-  type: 'jarvis-entity-summary',
+  type: 'donder-summary',
   name: 'Boilerplate Card',
   description: 'A template custom card for you to create something awesome',
 });
 
 export class BoilerplateCard extends LitElement {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    return document.createElement('jarvis-entity-summary-editor');
+    return document.createElement('donder-summary-editor');
   }
 
   public static getStubConfig(): Record<string, unknown> {
@@ -47,11 +47,13 @@ export class BoilerplateCard extends LitElement {
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
-  @state() private config!: BoilerplateCardConfig;
-  // @state() protected _isHassLoaded = false;
-  // @state() protected _isOn = false;
-  @state() protected _currentPercentages = {};
-  @state() protected _timeouts = {};
+  @property() state!: string
+  @property() config!: any
+  @property() _env!: any
+  @property() event!: any
+  @property() callback!: any
+  @state() protected _active;
+  @state() protected _expanded = false;
 
   public setConfig(config: BoilerplateCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
@@ -67,51 +69,6 @@ export class BoilerplateCard extends LitElement {
       name: 'Boilerplate',
       ...config,
     };
-  }
-
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (!this.config) {
-      return false;
-    }
-
-    return this.hasConfigOrEntityChanged(this, changedProps, false);
-  }
-
-  protected hasConfigOrEntityChanged(element: any, changedProps: PropertyValues, forceUpdate: boolean): boolean {
-    if (changedProps.has('config') || forceUpdate) {
-      return true;
-    }
-
-    if (element.config!.entity || element.config!.entities) {
-      const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
-      if (oldHass) {
-        if (element.config.entities) {
-          let hasChanged = false
-          for (let i=0; i<=element.config.entities.length-1; i++) {
-            const entity = element.config.entities[i]
-            if (oldHass.states[entity] !== element.hass!.states[entity]) {
-              hasChanged = true  
-              break
-            }            
-          }
-          return hasChanged
-        } else {
-          return (
-            oldHass.states[element.config!.entity]
-            !== element.hass!.states[element.config!.entity]
-          );
-        }
-      }
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private _handleAction(ev: ActionHandlerEvent): void {
-    if (this.hass && this.config && ev.detail.action) {
-      handleAction(this, this.hass, this.config, ev.detail.action);
-    }
   }
 
   private _showWarning(warning: string): TemplateResult {
@@ -133,17 +90,91 @@ export class BoilerplateCard extends LitElement {
     `;
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (!this.config) {
+      return false;
+    }
+
+    return this.hasConfigOrEntityChanged(this, changedProps, false);
+  }
+
+  protected hasConfigOrEntityChanged(element: any, changedProps: PropertyValues, forceUpdate: boolean): boolean {
+    if (changedProps.has('config') || forceUpdate) {
+      return true;
+    }
+    
+    const entities = this.config?.env?.[this.config.icon]
+
+    if (entities?.length) {
+      const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
+      if (oldHass) {
+        if (entities.length) {
+          let hasChanged = false
+          for (let i=0; i<=entities.length-1; i++) {
+            const entity = entities[i]
+            if (oldHass.states[entity] !== element.hass!.states[entity]) {
+              hasChanged = true  
+              break
+            }            
+          }
+          return hasChanged
+        } else {
+          return (
+            oldHass.states[element.config!.entity]
+            !== element.hass!.states[element.config!.entity]
+          );
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private handleClick(): void {
+    const { env } = this.config
+
+    if (env) {
+      this.hass.callService('browser_mod', 'popup', { 
+        content: {
+          type: 'custom:donder-custom-component',
+          component: 'summary-modal',
+          entities: env[this.config.icon],
+          env,
+          showScenes: this.config.name === 'Routines'
+        },
+        left_button: "Close",
+        left_button_action: this.hass.callService('browser_mod', 'close_popup', {browser_id: localStorage.getItem('browser_mod-browser-id')}),
+        browser_id: localStorage.getItem('browser_mod-browser-id'),
+        card_mod: {
+          style:{
+            "ha-dialog$": `div.mdc-dialog div.mdc-dialog__scrim {
+              -webkit-backdrop-filter: blur(0.7em);
+              backdrop-filter: blur(0.7em);
+              transition: none !important;
+              background-color: rgba(0, 0, 0, 0.5) !important;
+            } div.mdc-dialog div.mdc-dialog__surface {
+              border-radius: 5px;
+              max-width: 90%;
+            }
+            `,
+          }
+        }
+      })
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return css`
-     .type-custom-jarvis-entity-summary {
+     .type-custom-donder-entity-summary {
         height: 100%;
         width: 100%;
       }
-      .jarvis-sizer {
+      .donder-sizer {
         max-width: 100%;
         opacity: 0;
       }
-      .jarvis-widget {
+      .donder-widget {
         color: #fff;
         position: absolute;
         top: 0;
@@ -152,7 +183,7 @@ export class BoilerplateCard extends LitElement {
         width: 100%;
         padding: 15px 16px;
         box-sizing: border-box;
-        background: url('/local/jarvis/assets/cctv_frame_fat.svg');
+        background: url('/local/donder/assets/cctv_frame_fat.svg');
         background-repeat: no-repeat;
       }
       .title {
@@ -250,7 +281,7 @@ export class BoilerplateCard extends LitElement {
         }
       }
       @media (max-width: 600px) {
-        .jarvis-widget {
+        .donder-widget {
           padding: 10px;
         }
         .summary-icon {
@@ -260,57 +291,40 @@ export class BoilerplateCard extends LitElement {
     `;
   }
 
-  protected render(): TemplateResult | void {
-    // TODO Check for stateObj or other necessary things and render a warning if missing
-    if (this.config.show_warning) {
-      return this._showWarning('warning message');
-    }
+  protected render() {
 
-    if (this.config.show_error) {
-      return this._showError('error message');
-    }
-
-    const numEntities = this.config.entities.length
-    const numActiveEntities = this.config.entities.filter(e => this.hass.states[e]?.state === 'on').length
+    const entities = this.config?.env?.[this.config.icon]
+    const numEntities = entities?.length
+    const numActiveEntities = entities?.filter(e => this.hass.states[e]?.state === 'on').length
 
     return html`
-      <ha-card
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this.config.hold_action),
-          hasDoubleClick: hasAction(this.config.double_tap_action),
-        })}
-        tabindex="0"
-        .label=${`Boilerplate: ${this.config || 'No Entity Defined'}`}
-      >
-        <img src='/local/jarvis/assets/sizer.jpg' class="jarvis-sizer" />
-        <div class='jarvis-widget'>
-          <div class='title'>${this.config.name}</div>
-          <div class='summary-amount'>
-            <div class='summary-amount-num'>${`${numActiveEntities}/${numEntities}`}</div>
-            <img src='/local/jarvis/assets/summary_bs.svg' />
+      <img src='/local/donder/assets/sizer.jpg' class="donder-sizer" />
+      <div class='donder-widget' @click=${this.handleClick}>
+        <div class='title'>${this.config.name}</div>
+        <div class='summary-amount'>
+          <div class='summary-amount-num'>${`${numActiveEntities || 0}/${numEntities || 0}`}</div>
+          <img src='/local/donder/assets/summary_bs.svg' />
+        </div>
+        <div class='summary-corner-bs'>
+          <img src='/local/donder/assets/summary_corner.svg' />
+        </div>
+        <div class='summary-wrapper'>
+          <div class='summary-statuses'>
+            ${entities?.map(e => {
+              const isActive = this.hass.states[e]?.state === 'on'
+              return html`
+                <div class=${'summary-status '+ (isActive ? 'active' : 'innactive')}></div>
+              `
+            })}
           </div>
-          <div class='summary-corner-bs'>
-            <img src='/local/jarvis/assets/summary_corner.svg' />
-          </div>
-          <div class='summary-wrapper'>
-            <div class='summary-statuses'>
-              ${this.config.entities.map(e => {
-                const isActive = this.hass.states[e]?.state === 'on'
-                return html`
-                  <div class=${'summary-status '+ (isActive ? 'active' : 'innactive')}></div>
-                `
-              })}
-            </div>
-            <div class='summary-icon'>
-              <img src='/local/jarvis/assets/summary_gauge.svg' />
-              <div class='summary-consumption'>40<span>W</span></div>
-            </div>
+          <div class='summary-icon'>
+            <img src='/local/donder/assets/summary_gauge.svg' />
+            <div class='summary-consumption'>40<span>W</span></div>
           </div>
         </div>
-      </ha-card>
+      </div>
     `;
   }
 }
 
-customElements.define("jarvis-entity-summary", BoilerplateCard);
+customElements.define("donder-summary", BoilerplateCard);
