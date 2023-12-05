@@ -131,6 +131,14 @@ export class BoilerplateCard extends LitElement {
     }
   }
 
+  protected _handleAction(ev: ActionHandlerEvent): void {
+    const { action } = ev?.detail
+
+    if (action === 'tap') {
+      this.handleClick()
+    }
+  }
+
   private handleClick(): void {
     const { env } = this.config
 
@@ -298,31 +306,40 @@ export class BoilerplateCard extends LitElement {
     const numActiveEntities = entities?.filter(e => this.hass.states[e]?.state === 'on').length
 
     return html`
-      <img src='/local/donder/assets/sizer.jpg' class="donder-sizer" />
-      <div class='donder-widget' @click=${this.handleClick}>
-        <div class='title'>${this.config.name}</div>
-        <div class='summary-amount'>
-          <div class='summary-amount-num'>${`${numActiveEntities || 0}/${numEntities || 0}`}</div>
-          <img src='/local/donder/assets/summary_bs.svg' />
-        </div>
-        <div class='summary-corner-bs'>
-          <img src='/local/donder/assets/summary_corner.svg' />
-        </div>
-        <div class='summary-wrapper'>
-          <div class='summary-statuses'>
-            ${entities?.map(e => {
-              const isActive = this.hass.states[e]?.state === 'on'
-              return html`
-                <div class=${'summary-status '+ (isActive ? 'active' : 'innactive')}></div>
-              `
-            })}
+       <ha-card
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this.config.hold_action),
+          hasDoubleClick: hasAction(this.config.double_tap_action),
+        })}
+        tabindex="0"
+        .label=${`Boilerplate: ${this.config || 'No Entity Defined'}`}
+      >
+        <div class='donder-widget'>
+          <div class='title'>${this.config.name}</div>
+          <div class='summary-amount'>
+            <div class='summary-amount-num'>${`${numActiveEntities || 0}/${numEntities || 0}`}</div>
+            <img src='/local/donder/assets/summary_bs.svg' />
           </div>
-          <div class='summary-icon'>
-            <img src='/local/donder/assets/summary_gauge.svg' />
-            <div class='summary-consumption'>40<span>W</span></div>
+          <div class='summary-corner-bs'>
+            <img src='/local/donder/assets/summary_corner.svg' />
+          </div>
+          <div class='summary-wrapper'>
+            <div class='summary-statuses'>
+              ${entities?.map(e => {
+                const isActive = this.hass.states[e]?.state === 'on'
+                return html`
+                  <div class=${'summary-status '+ (isActive ? 'active' : 'innactive')}></div>
+                `
+              })}
+            </div>
+            <div class='summary-icon'>
+              <img src='/local/donder/assets/summary_gauge.svg' />
+              <div class='summary-consumption'>40<span>W</span></div>
+            </div>
           </div>
         </div>
-      </div>
+      </ha-card>
     `;
   }
 }
