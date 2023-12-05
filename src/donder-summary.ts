@@ -145,7 +145,7 @@ export class BoilerplateCard extends LitElement {
     if (env) {
       this.hass.callService('browser_mod', 'popup', { 
         content: {
-          type: 'custom:donder-custom-component',
+          type: 'custom:automation',
           component: 'summary-modal',
           entities: env[this.config.icon],
           env,
