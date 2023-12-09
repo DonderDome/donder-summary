@@ -24,7 +24,7 @@ import { actionHandler } from './action-handler-directive';
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  JARVIS-ENTITY-SUMMARY \n%c  version: ${CARD_VERSION}  `,
+  `%c  Donder Summary \n%c  version: ${CARD_VERSION}  `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
@@ -33,7 +33,7 @@ console.info(
 (window as any).customCards = (window as any).customCards || [];
 (window as any).customCards.push({
   type: 'donder-summary',
-  name: 'Boilerplate Card',
+  name: 'Donder Summary',
   description: 'A template custom card for you to create something awesome',
 });
 
@@ -174,7 +174,7 @@ export class BoilerplateCard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-     .type-custom-donder-entity-summary {
+     type-custom-donder-entity-summary {
         height: 100%;
         width: 100%;
       }
