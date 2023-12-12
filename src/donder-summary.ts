@@ -140,13 +140,12 @@ export class BoilerplateCard extends LitElement {
   }
 
   private handleClick(): void {
-    const { env } = this.config
+    const env = this.hass.states['donder_env.global'].attributes
 
     if (env) {
       this.hass.callService('browser_mod', 'popup', { 
         content: {
-          type: 'custom:automation',
-          component: 'summary-modal',
+          type: 'custom:donder-summary-modal',
           entities: env[this.config.icon],
           env,
           showScenes: this.config.name === 'Routines'
