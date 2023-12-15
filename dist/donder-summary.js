@@ -192,11 +192,12 @@ const X=(t,e)=>"method"===e.kind&&e.descriptor&&!("value"in e.descriptor)?{...e,
         width: 100%;
       }
       .donder-widget {
-        background-color: var(--card-background-color);
+        background-color: var(--ha-card-background);
         color: var(--text-primary-color);
         padding: 15px 22px 22px;
         box-sizing: border-box;
         text-align: center;
+        border-radius: var(--ha-card-border-radius)
       }
       .title {
         text-transform: uppercase;
@@ -300,7 +301,7 @@ const X=(t,e)=>"method"===e.kind&&e.descriptor&&!("value"in e.descriptor)?{...e,
           display: none;
         }
       }
-    `}render(){var t,e;const i=null===(e=null===(t=this.config)||void 0===t?void 0:t.env)||void 0===e?void 0:e[this.config.icon],o=null==i?void 0:i.length,n=null==i?void 0:i.filter((t=>{var e;return"on"===(null===(e=this.hass.states[t])||void 0===e?void 0:e.state)})).length;return O`
+    `}render(){var t,e;if(this.config.show_warning)return this._showWarning("warning message");if(this.config.show_error)return this._showError("error message");const i=null===(e=null===(t=this.config)||void 0===t?void 0:t.env)||void 0===e?void 0:e[this.config.icon],o=null==i?void 0:i.length,n=null==i?void 0:i.filter((t=>{var e;return"on"===(null===(e=this.hass.states[t])||void 0===e?void 0:e.state)})).length;return O`
        <ha-card
         @action=${this._handleAction}
         .actionHandler=${bt({hasHold:vt(this.config.hold_action),hasDoubleClick:vt(this.config.double_tap_action)})}

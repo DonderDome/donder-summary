@@ -178,11 +178,12 @@ export class BoilerplateCard extends LitElement {
         width: 100%;
       }
       .donder-widget {
-        background-color: var(--card-background-color);
+        background-color: var(--ha-card-background);
         color: var(--text-primary-color);
         padding: 15px 22px 22px;
         box-sizing: border-box;
         text-align: center;
+        border-radius: var(--ha-card-border-radius)
       }
       .title {
         text-transform: uppercase;
@@ -290,6 +291,14 @@ export class BoilerplateCard extends LitElement {
   }
 
   protected render() {
+
+    if (this.config.show_warning) {
+      return this._showWarning('warning message');
+    }
+
+    if (this.config.show_error) {
+      return this._showError('error message');
+    }
 
     const entities = this.config?.env?.[this.config.icon]
     const numEntities = entities?.length
