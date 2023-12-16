@@ -155,7 +155,7 @@ export class BoilerplateCard extends LitElement {
         browser_id: localStorage.getItem('browser_mod-browser-id'),
         card_mod: {
           style:{
-            "ha-dialog$div.mdc-dialog div.mdc-dialog": `.mdc-dialog__surface {
+            "ha-dialog$": `div.mdc-dialog div.mdc-dialog__surface {
               max-width: 90%;
             }
             `,
@@ -167,11 +167,12 @@ export class BoilerplateCard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-     .type-custom-donder-summary {
-        
+     type-custom-donder-entity-summary {
+        height: 100%;
+        width: 100%;
       }
       .donder-widget {
-        background-color: transparent;
+        background-color: var(--ha-card-background);
         color: var(--text-primary-color);
         padding: 15px 22px 22px;
         box-sizing: border-box;
