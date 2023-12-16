@@ -299,8 +299,8 @@ export class BoilerplateCard extends LitElement {
     if (this.config.show_error) {
       return this._showError('error message');
     }
-
-    const entities = this.config?.env?.[this.config.icon]
+    const env = this.hass.states['donder_env.global'].attributes
+    const entities = env?.[this.config.icon]
     const numEntities = entities?.length
     const numActiveEntities = entities?.filter(e => this.hass.states[e]?.state === 'on').length
 
