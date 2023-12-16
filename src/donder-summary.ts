@@ -167,9 +167,8 @@ export class BoilerplateCard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-     type-custom-donder-entity-summary {
-        height: 100%;
-        width: 100%;
+     .type-custom-donder-summary {
+        
       }
       .donder-widget {
         background-color: var(--ha-card-background);
