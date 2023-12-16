@@ -155,14 +155,10 @@ export class BoilerplateCard extends LitElement {
         browser_id: localStorage.getItem('browser_mod-browser-id'),
         card_mod: {
           style:{
-            "ha-dialog$": `div.mdc-dialog div.mdc-dialog__scrim {
-              -webkit-backdrop-filter: blur(0.7em);
-              backdrop-filter: blur(0.7em);
-              transition: none !important;
-              background-color: rgba(0, 0, 0, 0.5) !important;
-            } div.mdc-dialog div.mdc-dialog__surface {
-              border-radius: 5px;
-              max-width: 90%;
+            "ha-dialog$": `div.mdc-dialog div.mdc-dialog__surface {
+              width: 900px;
+            } div.mdc-dialog div.mdc-dialog__container {
+              height: auto !important;
             }
             `,
           }
