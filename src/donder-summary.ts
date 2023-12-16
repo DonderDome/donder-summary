@@ -168,7 +168,7 @@ export class BoilerplateCard extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       .donder-widget {
-        background-color: transparent
+        background-color: transparent;
         color: var(--text-primary-color);
         padding: 15px 22px 22px;
         box-sizing: border-box;
