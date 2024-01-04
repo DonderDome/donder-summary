@@ -177,7 +177,7 @@ export class BoilerplateCard extends LitElement {
       }
       .title {
         text-transform: uppercase;
-        font-size: 0.9rem;
+        font-size: 10px;
         font-weight: 600;
         /* margin-bottom: 18px; */
         font-stretch: 160%;
@@ -272,9 +272,14 @@ export class BoilerplateCard extends LitElement {
       @media (max-width: 600px) {
         .donder-widget {
           padding: 10px;
+          min-height: 70px;
         }
         .summary-icon {
           display: none;
+        }
+        .summary-corner-bs {
+          bottom: 0;
+          top: inherit;
         }
       }
     `;
