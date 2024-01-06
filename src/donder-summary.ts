@@ -150,6 +150,7 @@ export class BoilerplateCard extends LitElement {
           env,
           showScenes: this.config.name === 'Routines'
         },
+        title: ' ',
         browser_id: localStorage.getItem('browser_mod-browser-id'),
         card_mod: {
           style:{
