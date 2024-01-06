@@ -145,8 +145,10 @@ export class BoilerplateCard extends LitElement {
     if (env) {
       this.hass.callService('browser_mod', 'popup', { 
         content: {
-          type: 'custom:hue-like-light-card',
-          entity: "light.livingroom_light_stairs"
+          type: 'custom:donder-summary-modal',
+          entities: env[this.config.icon],
+          env,
+          showScenes: this.config.name === 'Routines'
         },
         left_button: "Close",
         left_button_action: this.hass.callService('browser_mod', 'close_popup', {browser_id: localStorage.getItem('browser_mod-browser-id')}),
