@@ -150,7 +150,8 @@ export class BoilerplateCard extends LitElement {
           env,
           showScenes: this.config.name === 'Routines'
         },
-        title: ' ',
+        left_button: "Close",
+        left_button_action: this.hass.callService('browser_mod', 'close_popup', {browser_id: localStorage.getItem('browser_mod-browser-id')}),
         browser_id: localStorage.getItem('browser_mod-browser-id'),
         card_mod: {
           style:{
